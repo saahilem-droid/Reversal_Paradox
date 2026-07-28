@@ -64,6 +64,9 @@ public class CloneController : CharacterMovement
         Vector2Int move = recordedMoves[currentMoveIndex];
 
         currentMoveIndex++;
+        HUDManager.Instance.ConsumeArrow(currentMoveIndex - 1);
+
+HUDManager.Instance.SetCounter(recordedMoves.Count - currentMoveIndex);
 
         if (move == Vector2Int.left)
 {

@@ -8,4 +8,7 @@ public class Platform : MonoBehaviour
     [Header("Ladders")]
     public Ladder ladderUp;
     public Ladder ladderDown;
+
+    [HideInInspector]
+public CharacterMovement occupant;
 }

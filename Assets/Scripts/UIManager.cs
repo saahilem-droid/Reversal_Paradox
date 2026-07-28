@@ -187,13 +187,19 @@ public class UIManager : MonoBehaviour
     #region Level Complete
 
     public void ShowLevelComplete()
-    {
-        Time.timeScale = 0;
+{
+    StartCoroutine(LevelCompleteRoutine());
+}
+private IEnumerator LevelCompleteRoutine()
+{
+    yield return Fade(1f);
 
-        CloseAllPanels();
+    CloseAllPanels();
 
-        OpenPanel(levelCompletePanel);
-    }
+    OpenPanel(levelCompletePanel);
+
+    Time.timeScale = 0;
+}
 
     public void HideLevelComplete()
     {
@@ -207,11 +213,16 @@ public class UIManager : MonoBehaviour
     #region Scene Functions
 
     public void RestartLevel()
-    {
-        Time.timeScale = 1;
+{
+    Time.timeScale = 1;
+    StartCoroutine(RestartRoutine());
+}
+private IEnumerator RestartRoutine()
+{
+    yield return Fade(1f);
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
+    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+}
 
     public void LoadMainMenu()
     {

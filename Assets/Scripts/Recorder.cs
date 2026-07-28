@@ -23,12 +23,21 @@ public class Recorder : MonoBehaviour
 
         recordedMoves.Add(direction);
 
+        HUDManager.Instance.AddArrow(direction);
+
+HUDManager.Instance.SetCounter(
+    recordingSlots - recordedMoves.Count);
+
         Debug.Log($"Recorded Move: {direction}");
 
         if (IsRecordingFinished)
-        {
-            Debug.Log("Recording Complete!");
-        }
+{
+    Debug.Log("Recording Complete!");
+
+    HUDManager.Instance.FlipHourglass();
+
+    HUDManager.Instance.GlitchCounter(CurrentRecordedMoves);
+}
     }
 
     public void ResetRecording()

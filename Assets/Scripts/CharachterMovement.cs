@@ -277,7 +277,15 @@ protected virtual void OnCollisionStay2D(Collision2D collision)
         return;
     }
 
-    currentPlatform = platform;
+    if (currentPlatform != null &&
+    currentPlatform != platform &&
+    currentPlatform.occupant == this)
+{
+    currentPlatform.occupant = null;
+}
+
+currentPlatform = platform;
+currentPlatform.occupant = this;
 
     rb.linearVelocity = Vector2.zero;
 
@@ -290,25 +298,53 @@ protected virtual void OnCollisionStay2D(Collision2D collision)
 
 protected virtual void OnCollisionExit2D(Collision2D collision)
 {
-    if (collision.collider.GetComponent<Platform>() != null)
-    {
-        isGrounded = false;
-    }
+    Platform platform = collision.collider.GetComponent<Platform>();
+
+    if (platform == null)
+        return;
+
+    if (platform.occupant == this)
+        platform.occupant = null;
+
+    isGrounded = false;
 }
+
+
 
 protected void ForcePlatform(Platform platform)
 {
+    if (currentPlatform != null &&
+        currentPlatform.occupant == this)
+    {
+        currentPlatform.occupant = null;
+    }
+
     currentPlatform = platform;
+
+    currentPlatform.occupant = this;
 
     transform.position = platform.centerPoint.position;
 
     rb.linearVelocity = Vector2.zero;
 
     isGrounded = true;
-
     isMoving = false;
 }
 
+public void ForceFall()
+{
+    if (currentPlatform != null &&
+        currentPlatform.occupant == this)
+    {
+        currentPlatform.occupant = null;
+    }
+
+    currentPlatform = null;
+
+    isGrounded = false;
+
+    rb.linearVelocity = new Vector2(0f, -0.1f);
+}
 protected Platform CurrentPlatform => currentPlatform;
 
 protected bool IsMoving => isMoving;

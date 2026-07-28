@@ -17,7 +17,7 @@ public class DoorController : MonoBehaviour
 [SerializeField] private DoorMode doorMode = DoorMode.Move;
 
 [Header("Enable / Disable")]
-[SerializeField] private GameObject[] objectsToToggle;
+[SerializeField] private Platform[] platformsToToggle;
 [SerializeField] private bool enableWhenOpen = false;
 
     private Vector3 closedPosition;
@@ -40,10 +40,17 @@ public class DoorController : MonoBehaviour
     }
     else
     {
-        foreach (GameObject obj in objectsToToggle)
+        foreach (Platform platform in platformsToToggle)
         {
-            if (obj != null)
-                obj.SetActive(enableWhenOpen);
+            if (platform == null)
+                continue;
+
+            if (platform.occupant != null)
+            {
+                platform.occupant.ForceFall();
+            }
+
+            platform.gameObject.SetActive(enableWhenOpen);
         }
     }
 }
@@ -57,10 +64,17 @@ public class DoorController : MonoBehaviour
     }
     else
     {
-        foreach (GameObject obj in objectsToToggle)
+        foreach (Platform platform in platformsToToggle)
         {
-            if (obj != null)
-                obj.SetActive(!enableWhenOpen);
+            if (platform == null)
+                continue;
+
+            if (platform.occupant != null)
+            {
+                platform.occupant.ForceFall();
+            }
+
+            platform.gameObject.SetActive(!enableWhenOpen);
         }
     }
 }

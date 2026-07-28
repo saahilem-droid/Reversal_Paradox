@@ -76,6 +76,10 @@ clone.Initialize(
 
         currentClones.Add(clone);
     }
+
+    HUDManager.Instance.FlipHourglass();
+
+HUDManager.Instance.SetCounter(recorder.RecordedMoves.Count);
 }
 
 private bool gameOver;
