@@ -16,6 +16,10 @@ public class CloneSettings
 {
     public Transform spawnPoint;
     public bool invertControls;
+    public Platform startingPlatform;
+
+    // Assign any level-specific colliders here
+    public Collider2D[] restartColliders;
 }
 
     private List<CloneController> currentClones = new List<CloneController>();
@@ -58,25 +62,38 @@ public class CloneSettings
     private void SpawnClones()
 {
     currentClones.Clear();
-    
+
     foreach (CloneSettings settings in clones)
     {
-        CloneController clone = Instantiate(
-            clonePrefab,
-            settings.spawnPoint.position,
-            Quaternion.identity);
+       CloneController clone = Instantiate(
+    clonePrefab,
+    settings.spawnPoint.position,
+    Quaternion.identity);
 
-        clone.Initialize(recorder.RecordedMoves);
-        clone.SetInvertControls(settings.invertControls);
+clone.Initialize(
+    recorder.RecordedMoves,
+    settings);
 
         currentClones.Add(clone);
     }
 }
 
-    public void TriggerParadox()
-    {
-        Debug.Log("PARADOX!");
+private bool gameOver;
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
+public void PlayerDied()
+{
+    if (gameOver)
+        return;
+
+    gameOver = true;
+
+    UIManager.Instance.ShowGameOver();
+}
+
+
+
+   public void TriggerParadox()
+{
+    PlayerDied();
+}
 }

@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class CloneController : CharacterMovement
 {
+    
     public void SetInvertControls(bool invert)
 {
     invertControls = invert;
@@ -31,14 +32,23 @@ public class CloneController : CharacterMovement
     }
 }
 
-    public void Initialize(IReadOnlyList<Vector2Int> moves)
-    {
-        recordedMoves = moves;
 
-        currentMoveIndex = 0;
 
-        ForcePlatform(startingPlatform);
-    }
+    public void Initialize(
+    IReadOnlyList<Vector2Int> moves,
+    GameManager.CloneSettings settings)
+{
+    recordedMoves = moves;
+    currentMoveIndex = 0;
+
+    SetInvertControls(settings.invertControls);
+
+    startingPlatform = settings.startingPlatform;
+
+    SetRestartColliders(settings.restartColliders);
+
+    ForcePlatform(startingPlatform);
+}
 
     public void StepForward()
     {

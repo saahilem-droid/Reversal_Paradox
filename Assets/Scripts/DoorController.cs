@@ -1,11 +1,24 @@
 using System.Collections;
 using UnityEngine;
 
+public enum DoorMode
+{
+    Move,
+    EnableDisable
+}
+
 public class DoorController : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private Vector3 openOffset;
     [SerializeField] private float moveSpeed = 3f;
+
+    [Header("Door Settings")]
+[SerializeField] private DoorMode doorMode = DoorMode.Move;
+
+[Header("Enable / Disable")]
+[SerializeField] private GameObject[] objectsToToggle;
+[SerializeField] private bool enableWhenOpen = false;
 
     private Vector3 closedPosition;
     private Vector3 openPosition;
@@ -19,20 +32,38 @@ public class DoorController : MonoBehaviour
     }
 
     public void OpenDoor()
+{
+    if (doorMode == DoorMode.Move)
     {
-        if (moveRoutine != null)
-            StopCoroutine(moveRoutine);
-
-        moveRoutine = StartCoroutine(MoveDoor(openPosition));
+        StopAllCoroutines();
+        StartCoroutine(MoveDoor(closedPosition + openOffset));
     }
+    else
+    {
+        foreach (GameObject obj in objectsToToggle)
+        {
+            if (obj != null)
+                obj.SetActive(enableWhenOpen);
+        }
+    }
+}
 
     public void CloseDoor()
+{
+    if (doorMode == DoorMode.Move)
     {
-        if (moveRoutine != null)
-            StopCoroutine(moveRoutine);
-
-        moveRoutine = StartCoroutine(MoveDoor(closedPosition));
+        StopAllCoroutines();
+        StartCoroutine(MoveDoor(closedPosition));
     }
+    else
+    {
+        foreach (GameObject obj in objectsToToggle)
+        {
+            if (obj != null)
+                obj.SetActive(!enableWhenOpen);
+        }
+    }
+}
 
     private IEnumerator MoveDoor(Vector3 target)
     {

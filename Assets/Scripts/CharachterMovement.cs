@@ -7,6 +7,8 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] protected float moveSpeed = 6f;
     [SerializeField] protected float horizontalMoveDistance = 1.45f;
 
+    
+
     [Header("References")]
     [SerializeField] protected Rigidbody2D rb;
     [SerializeField] protected Platform startingPlatform;
@@ -18,19 +20,31 @@ public class CharacterMovement : MonoBehaviour
     protected bool isMoving;
     protected bool isGrounded = true;
 
-    [Header("Level Boundaries")]
-[SerializeField] private Collider2D[] restartColliders;
+    [SerializeField]
+protected Collider2D[] restartColliders;
 
-    protected virtual void Start()
+    public void SetRestartColliders(Collider2D[] colliders)
+{
+    restartColliders = colliders;
+}
+
+
+
+protected virtual void Start()
+{
+    
+
+    ForcePlatform(startingPlatform);
+
+    currentPlatform = startingPlatform;
+
+    if (currentPlatform != null)
     {
-        ForcePlatform(startingPlatform);
-        currentPlatform = startingPlatform;
-
-        if (currentPlatform != null)
-        {
-            transform.position = currentPlatform.centerPoint.position;
-        }
+        rb.position = currentPlatform.centerPoint.position;
     }
+}
+
+   
 
     protected void MoveLeft()
     {
@@ -94,16 +108,37 @@ public class CharacterMovement : MonoBehaviour
 
 protected void ClimbDown()
 {
+    Debug.Log("ClimbDown Called");
+
     if (!CanMove())
         return;
 
     if (currentPlatform == null)
         return;
 
-    if (currentPlatform.ladderDown == null)
-        return;
+    Debug.Log("Current Platform = " + currentPlatform.name);
+
+Debug.Log("Ladder Down = " + currentPlatform.ladderDown);
+
+if (currentPlatform.ladderDown == null)
+{
+    Debug.Log("No ladder down");
+    return;
+}
+
+Debug.Log("Bottom Platform = " + currentPlatform.ladderDown.bottomPlatform.name);
 
     Platform targetPlatform = currentPlatform.ladderDown.bottomPlatform;
+
+Collider2D currentPlatformCollider = currentPlatform.GetComponent<Collider2D>();
+
+if (currentPlatformCollider != null)
+{
+    StartCoroutine(
+        DisablePlatformTemporarily(
+            currentPlatformCollider,
+            0.5f));
+}
 
     StartCoroutine(
         MoveRoutine(
@@ -133,6 +168,8 @@ protected void MoveVertical(int direction)
         ClimbDown();
 }
 
+
+
 private void LateUpdate()
 {
     CheckRestartColliders();
@@ -140,29 +177,43 @@ private void LateUpdate()
 
 protected IEnumerator MoveRoutine(Vector3 targetPosition, Platform targetPlatform)
 {
+
+  
     isMoving = true;
 
-    while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
+    Vector2 target = targetPosition;
+
+    while (Vector2.Distance(rb.position, target) > 0.01f)
     {
         rb.MovePosition(
             Vector2.MoveTowards(
                 rb.position,
-                targetPosition,
-                moveSpeed * Time.deltaTime));
+                target,
+                moveSpeed * Time.fixedDeltaTime));
 
         yield return new WaitForFixedUpdate();
     }
 
-    rb.MovePosition(targetPosition);
-    transform.position = targetPosition;
+    rb.position = target;
 
     if (targetPlatform != null)
         currentPlatform = targetPlatform;
+
 
     isMoving = false;
 
     OnMovementFinished();
 }
+
+private IEnumerator DisablePlatformTemporarily(Collider2D platformCollider, float duration)
+{
+    platformCollider.enabled = false;
+
+    yield return new WaitForSeconds(duration);
+
+    platformCollider.enabled = true;
+}
+
 private void CheckRestartColliders()
 {
     if (restartColliders == null)
@@ -177,7 +228,7 @@ private void CheckRestartColliders()
 
         if (myCollider.IsTouching(col))
         {
-            GameManager.Instance.TriggerParadox();
+            GameManager.Instance.PlayerDied();
             return;
         }
     }
@@ -202,9 +253,11 @@ protected virtual void OnCollisionEnter2D(Collision2D collision)
     if ((CompareTag("Player") && collision.collider.CompareTag("Clone")) ||
         (CompareTag("Clone") && collision.collider.CompareTag("Player")))
     {
-        GameManager.Instance.TriggerParadox();
+        GameManager.Instance.PlayerDied();
     }
 }
+
+
 
 protected virtual void OnCollisionStay2D(Collision2D collision)
 {

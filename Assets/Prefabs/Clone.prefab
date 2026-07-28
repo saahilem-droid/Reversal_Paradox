@@ -146,7 +146,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 0.9
+  m_GravityScale: 1.2
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -175,5 +175,4 @@ MonoBehaviour:
   rb: {fileID: 8833646571832090871}
   startingPlatform: {fileID: 7028197475737857899, guid: f126ba7b3f8af3b4ebc654c1c72351a5, type: 3}
   invertControls: 0
-  restartColliders:
-  - {fileID: 8180047603656910838, guid: 43194674498b00f4c9a594ffb1d0e7c1, type: 3}
+  restartColliders: []
